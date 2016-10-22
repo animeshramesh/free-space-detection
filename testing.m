@@ -8,17 +8,16 @@ c = size(img, 2);
 res = zeros(r,c);
 
 patches = zeros(48, r*c/16);
-k = 1;
 for i = 1:4:r
     for j = 1:4:c
         curPatch = img(i:i+3, j:j+3, :);
         curPatch = curPatch(:);
         inp = cell(1);
-        inp{1} = curPatch;
-        
+        inp{1} = double(curPatch);
         [label,~,~] = myNeuralNetworkFunction(inp);
-        if label == 1
-            res(i:i+3, j:j+3) = 0;
+        if label{1,1} > 0.7
+            res(i:i+3, j:j+3) = 255;
         end
     end 
 end
+imshow(res);

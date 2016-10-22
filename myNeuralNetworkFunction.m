@@ -50,7 +50,6 @@ Y = cell(1,TS);
 
 % Time loop
 for ts=1:TS
-    size(X{1,1})
     % Input 1
     Xp1 = mapminmax_apply(X{1,ts},x1_step1_gain,x1_step1_xoffset,x1_step1_ymin);
     
