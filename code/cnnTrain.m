@@ -1,43 +1,77 @@
-function [trainedNet,traininfo] = cnnTrain(X,Y,squarePatchLength)
+function [trainedNet,traininfo] = cnnTrain(squarePatchLength,X,Y)
 
-fprintf('creating input layer...\n');
-inputLayer = imageInputLayer([squarePatchLength squarePatchLength 3]);
+%% creating patches
+if nargin < 3
+    [X,Y] = createXYfromPatches(squarePatchLength);
+end
+% %% input layer
+% Attempt 1 - does not work
+% inputLayer = imageInputLayer([squarePatchLength squarePatchLength 3]);
+% 
+% %% Layer 1
+% numFilterConv1 = 32;
+% filterSizeConv1 = 5;
+% conv1 = convolution2dLayer(filterSizeConv1,numFilterConv1,'Stride',1);
+% relu1 = reluLayer('Name','relu1');
+% maxpool1 = maxPooling2dLayer(2,'Stride',1); 
+% 
+% %% Layer 2
+% conv2 = convolution2dLayer(filterSizeConv1,numFilterConv1*2,'Stride',1);
+% relu2 = reluLayer('Name','relu2');
+% maxpool2 = maxPooling2dLayer(2,'Stride',1); 
+% 
+% %% FC layer
+% fc1 = fullyConnectedLayer(128);
+% relu3 = reluLayer('Name','relu3');
+% fc2 = fullyConnectedLayer(2);
+% softmax1 = softmaxLayer();
+% fprintf('creating classification layer...\n');
+% coutputLayer = classificationLayer();
+% 
+% 
+% %% layers
+% layers = [inputLayer;
+%           conv1;
+%           relu1;
+%           maxpool1;
+%           conv2;
+%           relu2;
+%           maxpool2;
+%           fc1;
+%           relu3;
+%           fc2;
+%           softmax1;
+%           coutputLayer
+%           ];
+ 
+% Attempt 2 - does not work
+% layers = [imageInputLayer([squarePatchLength squarePatchLength 3]);
+%           convolution2dLayer(5,20);
+%           reluLayer();
+%           maxPooling2dLayer(2,'Stride',1);
+%           fullyConnectedLayer(2);
+%           softmaxLayer();
+%           classificationLayer()];
 
-numFilterConv1 = 16;
-filterSizeConv1 = 4;
-fprintf('creating conv layer...\n');
-conv1 = convolution2dLayer(filterSizeConv1,numFilterConv1,'Stride',4);
-fprintf('creating reLU layer...\n');
-relu1 = reluLayer('Name','relu1');
-fprintf('creating maxpool layer...\n');
-maxpool1 = maxPooling2dLayer(2,'Stride',2);   
-fprintf('creating fc layer...\n');
-fc1 = fullyConnectedLayer(2);
-fprintf('creating softmax layer...\n');
-softmax1 = softmaxLayer();
-fprintf('creating classification layer...\n');
-coutputLayer = classificationLayer();
-
-
-
-layers = [inputLayer;
-          conv1;
-          relu1;
-          maxpool1;
-          fc1;
-          softmax1;
-          coutputLayer
-          ];
-      
+% Attempt 3
+layers = [imageInputLayer([squarePatchLength squarePatchLength 3]);
+          fullyConnectedLayer(squarePatchLength^2);
+          fullyConnectedLayer((squarePatchLength^2)/2);
+          fullyConnectedLayer((squarePatchLength^2)/4);
+          %fullyConnectedLayer((squarePatchLength^2)/8);
+          fullyConnectedLayer(2);
+          softmaxLayer();
+          classificationLayer()];
 checkpointDir = strcat('../checkpoints/',num2str(squarePatchLength),'x',num2str(squarePatchLength));
       mkdir(checkpointDir);
-options = trainingOptions('sgdm',...
-      'LearnRateSchedule','piecewise',...
-      'LearnRateDropFactor',0.2,... 
-      'LearnRateDropPeriod',5,... 
-      'MaxEpochs',30,... 
-      'MiniBatchSize',1024,...
-      'CheckpointPath',checkpointDir);
+% options = trainingOptions('sgdm',...
+%       'LearnRateSchedule','none',... 
+%       'MaxEpochs',200,... 
+%       'MiniBatchSize',1024,...
+%       'CheckpointPath',checkpointDir);
+
+options = trainingOptions('sgdm','MaxEpochs',20,...
+	'InitialLearnRate',0.001);
 
 fprintf('Training...\n');
 Y = categorical(Y);

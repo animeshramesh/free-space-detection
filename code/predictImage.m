@@ -1,4 +1,4 @@
-function [YPred, X] = predictImage(img, net, squarePatchLength)
+function [YPred,scores, X] = predictImage(img, net, squarePatchLength)
 % Makes a prediction for the given image
 % X - Input image
 % net - Trained network 
@@ -6,14 +6,11 @@ function [YPred, X] = predictImage(img, net, squarePatchLength)
 
 
 % Extract patches from image
-numPatches = 384*1248/squarePatchLength/squarePatchLength;
-%X = zeros(squarePatchLength,squarePatchLength,3,numPatches);
 [patches, ~] = createPatchesFromImage(img, squarePatchLength, []);
 for i=1:size(patches,1)
     X(:,:,:,i) = patches{i};
+   % imshow(X(:,:,:,i));
+    [YPred(i),scores(i,:)] = classify(net,X(:,:,:,i));
 end
-
-size(X)
-YPred = predict(net,X);
 end
 
