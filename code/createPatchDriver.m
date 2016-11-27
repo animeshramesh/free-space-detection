@@ -17,3 +17,4 @@ for i = 1:length(imagefiles)
     save(matfilename,'patches','labelPatches');
 end
 
+

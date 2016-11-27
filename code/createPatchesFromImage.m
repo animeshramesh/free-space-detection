@@ -21,7 +21,7 @@ for i = rowPatch
         curPatch = img(i:i+squarePatchlength-1, j:j+squarePatchlength-1, :);
         patches{patchNo} = curPatch;
         
-        if maskImg
+        if ~isempty(maskImg)
             curMask = im2double(maskImg(i:i+squarePatchlength-1, j:j+squarePatchlength-1));
             label = (sum(sum(curMask==1))>(squarePatchlength^2)/2);
             if(label)
