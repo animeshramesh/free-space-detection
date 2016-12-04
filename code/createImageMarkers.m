@@ -4,7 +4,6 @@ imagefiles = dir('../data/training/gt_image_2/*.png');
 % make new folder to store masks. 
 mkdir('../data/training','masks');
 for i = 1:length(imagefiles)
-    i
     name = imagefiles(i).name;
     
     % Ignore lane markers
